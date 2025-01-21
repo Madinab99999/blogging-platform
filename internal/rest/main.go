@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/Madinab99999/blogging-platform/internal/config"
 	"github.com/Madinab99999/blogging-platform/internal/rest/handler"
@@ -37,8 +38,12 @@ func (a *Rest) Start(conf *config.APIRestConfig, ctx context.Context) error {
 
 	errLogger := slog.NewLogLogger(a.logger.Handler(), slog.LevelError)
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", a.conf.Port),
-		Handler: mux,
+		Addr:              fmt.Sprintf(":%d", a.conf.Port),
+		Handler:           mux,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
 		BaseContext: func(_ net.Listener) context.Context {
 			return ctx
 		},
